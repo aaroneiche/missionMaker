@@ -1,143 +1,33 @@
 <html>
   <head>
 
-    <script src="bower_components/abdmob/x2js/xml2json.min.js"></script>
+    <script src="js/xml2json.min.js"></script>
     <script>
       const missionTemplate = {
-        mission: {
-          start:{
-
-          }
+        mission:{
+          start: {
+            "set_variable":{"_name":"created","_value":"0"}
+          },
+          event:[
+            {
+              'if_variable':{'_name':'created', '_comparator':'EQUALS','_value':'0'},
+              'create':{"_type":'enemy',}
+            },
+            'second',
+          ]
         }
       };
 
-      // const createTypes = [
-      //   ""
-      // ]
-
-      var scaling = 1;
-
-      // scaling = 2
-
-
-      function unitToPixel() {
-        return canvas.width/(100000/scaling);
-      }
 
       function setup(){
-        canvas = document.getElementById("canvas");
-        context = canvas.getContext("2d");
-
-        canvas.addEventListener('mousemove', function(evt) {
-          var mousePos = getMousePos(canvas, evt);
-          // var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-        }, false);
-
-        canvas.addEventListener('mousewheel',function(evt){
-
-          if(evt.wheelDelta < 1){
-            scaling -= 1;
-          }else if(evt.wheelDelta > 1){
-            scaling +=  1;
-          }
-          evt.preventDefault();
-          console.log(evt.wheelDelta + " " + scaling);
-          drawView();
-        })
-
-
+        var x2js = new X2JS();
       }
 
-      function getMousePos(canvas, evt) {
-              var rect = canvas.getBoundingClientRect();
-              return {
-                x: evt.clientX - rect.left,
-                y: evt.clientY - rect.top
-              };
-            }
-
-
-      /*
-      //convert the actual width of the canvas to the width of a view of the space you're viewing.
-      // So all the way zoomed out, 100,000 units = 800 pixels
-      // Zoom in by half, 50,000 units = 800 pixels
-      // So, because we draw at pixel locations we need to divide the units into the space we have.
-
-      canvas.width/100,000 =
-
-
-      We need a units to pixel size. That will tell us where to draw.
-
-
-      */
-
-
-      function createNewMission(){
+      function generateXML(){
+        var xmlAsStr = x2js.json2xml_str( missionTemplate );
+        document.getElementById("output").innerHTML = xmlAsStr;
       }
 
-
-      function drawView(){
-        clear();
-        drawSectorLines(canvas);
-        context.stroke();
-      }
-
-
-      function drawSectorLines(canvas){
-        context = canvas.getContext("2d");
-        context.strokeStyle="#ffff66";
-
-        for(var i = 0; i < 5; i++){
-          var xPos = (20000 * i) * unitToPixel();
-
-          context.moveTo(xPos,0);
-          context.lineTo(xPos,canvas.width);
-        }
-
-        for(var i = 0; i < 5; i++){
-          var yPos = (20000 * i) * unitToPixel();
-          context.moveTo(0,yPos);
-          context.lineTo(canvas.height, yPos);
-        }
-      }
-
-      direction = true;
-      zoom = true;
-
-      function updateScaling(){
-        if(direction){
-          scaling += 0.01;
-        }else{
-          scaling -= 0.01;
-        }
-        if(zoom){
-          setTimeout(updateScaling,500)
-        }
-        drawView();
-      }
-
-
-
-      function zoomTest(){
-
-        while(zoom){
-
-          setTimeout(updateScaling,500)
-          zoom = false;
-          if(scaling > 3){
-            directon = false;
-          }else if(scaling < 1){
-            directon = true;
-          }
-          console.log(scaling);
-
-        }
-      }
-
-
-      function clear(){
-        context.clearRect(0,0,canvas.height,canvas.width);
-      }
 
     </script>
     <style>
@@ -149,10 +39,16 @@
   </head>
   <body onload="setup();">
 
+    <div id="controls">
 
-    <canvas id="canvas" width="800" height="800">
+    </div>
 
-    </canvas>
+    <textarea id="output" rows="20" cols="40"></textarea>
+
+
+    <!-- <canvas id="canvas" width="800" height="800">
+
+    </canvas> -->
 
   </body>
 </html>
